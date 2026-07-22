@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useCart } from "../CartContext";
 import Header from "../components/Header";
 import supabase from "../supabaseClient";
+import { useIsMobile } from "../useIsMobile";
 
 function ProductPage() {
   const { id } = useParams();
@@ -15,6 +16,7 @@ function ProductPage() {
   const [sizeError, setSizeError] = useState(false);
   const [images, setImages] = useState([]);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const isMobile = useIsMobile();
 
   const [wantsCustomization, setWantsCustomization] = useState(false);
   const [customName, setCustomName] = useState("");
@@ -112,9 +114,9 @@ function ProductPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "32px",
-          padding: "32px 24px",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? "20px" : "32px",
+          padding: isMobile ? "16px" : "32px 24px",
           maxWidth: "1000px",
           margin: "0 auto",
         }}
@@ -124,7 +126,7 @@ function ProductPage() {
             style={{
               backgroundColor: "#1C1C1C",
               borderRadius: "8px",
-              height: "420px",
+              height: isMobile ? "300px" : "420px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -146,14 +148,15 @@ function ProductPage() {
           </div>
 
           {images.length > 1 && (
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", overflowX: "auto" }}>
               {images.map((img, index) => (
                 <button
                   key={img.id}
                   onClick={() => setActiveImageIndex(index)}
                   style={{
-                    width: "64px",
-                    height: "64px",
+                    width: isMobile ? "56px" : "64px",
+                    height: isMobile ? "56px" : "64px",
+                    flexShrink: 0,
                     padding: 0,
                     backgroundColor: "#1C1C1C",
                     border:
@@ -187,7 +190,7 @@ function ProductPage() {
           <h1
             style={{
               fontFamily: "'Anton', sans-serif",
-              fontSize: "26px",
+              fontSize: isMobile ? "21px" : "26px",
               marginBottom: "12px",
             }}
           >
@@ -196,7 +199,7 @@ function ProductPage() {
           <p
             style={{
               color: "#FFD500",
-              fontSize: "22px",
+              fontSize: isMobile ? "19px" : "22px",
               fontWeight: 500,
               marginBottom: "16px",
             }}
@@ -233,7 +236,7 @@ function ProductPage() {
               >
                 Talla
               </p>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 {variants.map((v) => (
                   <button
                     key={v.id}
@@ -243,7 +246,7 @@ function ProductPage() {
                       setSizeError(false);
                     }}
                     style={{
-                      padding: "8px 14px",
+                      padding: isMobile ? "10px 14px" : "8px 14px",
                       backgroundColor:
                         selectedSize === v.id ? "#FFD500" : "#1C1C1C",
                       color:
@@ -257,6 +260,7 @@ function ProductPage() {
                         : "1px solid #333",
                       borderRadius: "4px",
                       cursor: v.stock === 0 ? "not-allowed" : "pointer",
+                      fontSize: "14px",
                     }}
                   >
                     {v.size}
@@ -345,7 +349,7 @@ function ProductPage() {
                       border: "1px solid #333",
                       borderRadius: "4px",
                       color: "#F5F5F0",
-                      fontSize: "14px",
+                      fontSize: "16px",
                       marginBottom: "12px",
                       boxSizing: "border-box",
                     }}
@@ -376,7 +380,7 @@ function ProductPage() {
                       border: "1px solid #333",
                       borderRadius: "4px",
                       color: "#F5F5F0",
-                      fontSize: "14px",
+                      fontSize: "16px",
                       boxSizing: "border-box",
                       marginBottom: product.patches_available ? "14px" : 0,
                     }}
@@ -437,6 +441,7 @@ function ProductPage() {
               fontSize: "15px",
               fontWeight: 500,
               cursor: "pointer",
+              width: isMobile ? "100%" : "auto",
             }}
           >
             Añadir al carrito
@@ -447,8 +452,9 @@ function ProductPage() {
         <div
           style={{
             position: "fixed",
-            bottom: "24px",
-            right: "24px",
+            bottom: isMobile ? "16px" : "24px",
+            right: isMobile ? "16px" : "24px",
+            left: isMobile ? "16px" : "auto",
             backgroundColor: "#FFD500",
             color: "#0A0A0A",
             padding: "14px 20px",
@@ -456,6 +462,7 @@ function ProductPage() {
             fontSize: "14px",
             fontWeight: 500,
             boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+            textAlign: isMobile ? "center" : "left",
           }}
         >
           Producto añadido al carrito ✓

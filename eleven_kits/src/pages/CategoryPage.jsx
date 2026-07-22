@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import supabase from '../supabaseClient';
+import { useIsMobile } from '../useIsMobile';
 
 function CategoryPage() {
   const { categorySlug, subcategorySlug } = useParams();
   const [products, setProducts] = useState([]);
   const [categoryName, setCategoryName] = useState('');
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -56,11 +58,11 @@ function CategoryPage() {
     <div style={{ backgroundColor: '#0A0A0A', minHeight: '100vh', color: '#F5F5F0' }}>
       <Header />
 
-      <div style={{ padding: '32px 24px' }}>
+      <div style={{ padding: isMobile ? '20px 16px' : '32px 24px' }}>
         <h1 style={{
           fontFamily: "'Anton', sans-serif",
-          fontSize: '28px',
-          marginBottom: '24px',
+          fontSize: isMobile ? '22px' : '28px',
+          marginBottom: isMobile ? '16px' : '24px',
         }}>
           {categoryName}
         </h1>
@@ -73,8 +75,8 @@ function CategoryPage() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-          gap: '16px',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: isMobile ? '10px' : '16px',
         }}>
           {products.map((product) => (
             <Link
@@ -88,17 +90,28 @@ function CategoryPage() {
                 overflow: 'hidden',
               }}>
                 <div style={{
-                  height: '220px',
+                  height: isMobile ? '150px' : '220px',
                   backgroundColor: '#262626',
                   backgroundImage: product.image_url ? `url(${product.image_url})` : 'none',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }} />
-                <div style={{ padding: '12px' }}>
-                  <p style={{ color: '#F5F5F0', fontSize: '14px', marginBottom: '4px' }}>
+                <div style={{ padding: isMobile ? '8px 10px' : '12px' }}>
+                  <p style={{
+                    color: '#F5F5F0',
+                    fontSize: isMobile ? '12px' : '14px',
+                    marginBottom: '4px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
                     {product.name}
                   </p>
-                  <p style={{ color: '#FFD500', fontSize: '15px', fontWeight: 500 }}>
+                  <p style={{
+                    color: '#FFD500',
+                    fontSize: isMobile ? '13px' : '15px',
+                    fontWeight: 500,
+                  }}>
                     {product.price} €
                   </p>
                 </div>

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCart } from '../CartContext';
+import { useIsMobile } from '../useIsMobile';
 
 function Checkout() {
   const { items, totalPrice } = useCart();
+  const isMobile = useIsMobile();
 
   const [form, setForm] = useState({
     name: '',
@@ -107,29 +109,125 @@ function Checkout() {
     border: '1px solid #333',
     borderRadius: '4px',
     color: '#F5F5F0',
-    fontSize: '14px',
+    fontSize: '16px',
     outline: 'none',
+    boxSizing: 'border-box',
   };
+
+  const orderSummary = (
+    <div style={{
+      backgroundColor: '#1C1C1C',
+      border: '1px solid #262626',
+      borderRadius: '8px',
+      padding: isMobile ? '16px' : '20px',
+      position: isMobile ? 'static' : 'sticky',
+      top: '24px',
+    }}>
+      <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
+        Resumen del pedido
+      </p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
+        {items.map((item) => (
+          <div
+            key={item.cartItemId}
+            style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+          >
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: '#262626',
+              borderRadius: '4px',
+              backgroundImage: item.image ? `url(${item.image})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              flexShrink: 0,
+              position: 'relative',
+            }}>
+              <span style={{
+                position: 'absolute',
+                top: '-6px',
+                right: '-6px',
+                backgroundColor: '#FFD500',
+                color: '#0A0A0A',
+                fontSize: '10px',
+                fontWeight: 700,
+                borderRadius: '50%',
+                width: '18px',
+                height: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                {item.quantity}
+              </span>
+            </div>
+            <div style={{ flexGrow: 1, minWidth: 0 }}>
+              <p style={{
+                fontSize: '12px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {item.name}
+              </p>
+              {item.size && (
+                <p style={{ fontSize: '11px', color: '#8A8A8A' }}>Talla: {item.size}</p>
+              )}
+              {item.customization && (
+                <p style={{ fontSize: '11px', color: '#8A8A8A' }}>
+                  {item.customization.customizationName && (
+                    <>{item.customization.customizationName} </>
+                  )}
+                  {item.customization.customizationNumber && (
+                    <>#{item.customization.customizationNumber} </>
+                  )}
+                  {item.customization.hasPatches && <>· Parches</>}
+                </p>
+              )}
+            </div>
+            <p style={{ fontSize: '12px', color: '#FFD500', flexShrink: 0 }}>
+              {(item.price * item.quantity).toFixed(2)} €
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{
+        borderTop: '1px solid #262626',
+        paddingTop: '14px',
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}>
+        <p style={{ fontSize: '15px' }}>Total</p>
+        <p style={{ fontSize: '15px', color: '#FFD500', fontWeight: 600 }}>
+          {totalPrice.toFixed(2)} €
+        </p>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ backgroundColor: '#0A0A0A', minHeight: '100vh', color: '#F5F5F0' }}>
       <Header />
 
       <div style={{
-        padding: '48px 24px',
+        padding: isMobile ? '20px 16px' : '48px 24px',
         maxWidth: '960px',
         margin: '0 auto',
         display: 'grid',
-        gridTemplateColumns: '1fr 340px',
-        gap: '40px',
+        gridTemplateColumns: isMobile ? '1fr' : '1fr 340px',
+        gap: isMobile ? '24px' : '40px',
         alignItems: 'start',
       }}>
+        {isMobile && orderSummary}
+
         <div>
           <h1 style={{
             fontFamily: "'Anton', sans-serif",
-            fontSize: '28px',
+            fontSize: isMobile ? '22px' : '28px',
             letterSpacing: '1px',
-            marginBottom: '28px',
+            marginBottom: isMobile ? '20px' : '28px',
           }}>
             FINALIZAR COMPRA
           </h1>
@@ -151,7 +249,7 @@ function Checkout() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Email</label>
                 <input
@@ -191,7 +289,7 @@ function Checkout() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Ciudad</label>
                 <input
@@ -256,96 +354,7 @@ function Checkout() {
           </form>
         </div>
 
-        <div style={{
-          backgroundColor: '#1C1C1C',
-          border: '1px solid #262626',
-          borderRadius: '8px',
-          padding: '20px',
-          position: 'sticky',
-          top: '24px',
-        }}>
-          <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
-            Resumen del pedido
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
-            {items.map((item) => (
-              <div
-                key={item.cartItemId}
-                style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
-              >
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  backgroundColor: '#262626',
-                  borderRadius: '4px',
-                  backgroundImage: item.image ? `url(${item.image})` : 'none',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  flexShrink: 0,
-                  position: 'relative',
-                }}>
-                  <span style={{
-                    position: 'absolute',
-                    top: '-6px',
-                    right: '-6px',
-                    backgroundColor: '#FFD500',
-                    color: '#0A0A0A',
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    borderRadius: '50%',
-                    width: '18px',
-                    height: '18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    {item.quantity}
-                  </span>
-                </div>
-                <div style={{ flexGrow: 1, minWidth: 0 }}>
-                  <p style={{
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {item.name}
-                  </p>
-                  {item.size && (
-                    <p style={{ fontSize: '11px', color: '#8A8A8A' }}>Talla: {item.size}</p>
-                  )}
-                  {item.customization && (
-                    <p style={{ fontSize: '11px', color: '#8A8A8A' }}>
-                      {item.customization.customizationName && (
-                        <>{item.customization.customizationName} </>
-                      )}
-                      {item.customization.customizationNumber && (
-                        <>#{item.customization.customizationNumber} </>
-                      )}
-                      {item.customization.hasPatches && <>· Parches</>}
-                    </p>
-                  )}
-                </div>
-                <p style={{ fontSize: '12px', color: '#FFD500', flexShrink: 0 }}>
-                  {(item.price * item.quantity).toFixed(2)} €
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            borderTop: '1px solid #262626',
-            paddingTop: '14px',
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}>
-            <p style={{ fontSize: '15px' }}>Total</p>
-            <p style={{ fontSize: '15px', color: '#FFD500', fontWeight: 600 }}>
-              {totalPrice.toFixed(2)} €
-            </p>
-          </div>
-        </div>
+        {!isMobile && orderSummary}
       </div>
     </div>
   );

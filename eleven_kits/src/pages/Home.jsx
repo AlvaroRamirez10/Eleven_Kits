@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import supabase from '../supabaseClient';
+import { useIsMobile } from '../useIsMobile';
 
 function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -30,7 +32,7 @@ function Home() {
       {/* HERO */}
       <div style={{
         textAlign: 'center',
-        padding: '80px 24px 64px',
+        padding: isMobile ? '40px 20px 36px' : '80px 24px 64px',
       }}>
         <div style={{
           display: 'inline-block',
@@ -48,7 +50,7 @@ function Home() {
 
         <h1 style={{
           fontFamily: "'Anton', sans-serif",
-          fontSize: 'clamp(36px, 6vw, 56px)',
+          fontSize: 'clamp(30px, 8vw, 56px)',
           lineHeight: 1.1,
           margin: 0,
           letterSpacing: '1px',
@@ -59,24 +61,26 @@ function Home() {
 
         <p style={{
           color: '#8A8A8A',
-          fontSize: '15px',
+          fontSize: '14px',
           maxWidth: '420px',
-          margin: '20px auto 0',
+          margin: '16px auto 0',
         }}>
           Camisetas, chándals y calzado deportivo. Envío rápido, calidad revisada.
         </p>
 
         <Link to="/categoria/futbol">
           <button style={{
-            marginTop: '28px',
+            marginTop: '24px',
             backgroundColor: '#FFD500',
             color: '#0A0A0A',
             border: 'none',
-            padding: '14px 36px',
+            padding: isMobile ? '13px 32px' : '14px 36px',
             borderRadius: '4px',
             fontSize: '15px',
             fontWeight: 600,
             cursor: 'pointer',
+            width: isMobile ? '100%' : 'auto',
+            maxWidth: '280px',
           }}>
             Ver colección
           </button>
@@ -86,9 +90,9 @@ function Home() {
       {/* CATEGORÍAS DESTACADAS */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '16px',
-        padding: '0 24px 64px',
+        gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: isMobile ? '10px' : '16px',
+        padding: isMobile ? '0 16px 40px' : '0 24px 64px',
         maxWidth: '1100px',
         margin: '0 auto',
       }}>
@@ -97,18 +101,24 @@ function Home() {
           { name: 'Baloncesto', slug: 'baloncesto' },
           { name: 'Calzado', slug: 'calzado' },
         ].map((cat) => (
-          <Link key={cat.slug} to={`/categoria/${cat.slug}`} style={{ textDecoration: 'none' }}>
+          <Link
+            key={cat.slug}
+            to={`/categoria/${cat.slug}`}
+            style={{
+              textDecoration: 'none',
+              gridColumn: isMobile && cat.slug === 'calzado' ? '1 / -1' : 'auto',
+            }}
+          >
             <div style={{
               backgroundColor: '#1C1C1C',
               borderRadius: '8px',
-              padding: '32px 20px',
+              padding: isMobile ? '22px 16px' : '32px 20px',
               textAlign: 'center',
               border: '1px solid #262626',
-              transition: 'border-color 0.2s',
             }}>
               <p style={{
                 fontFamily: "'Anton', sans-serif",
-                fontSize: '18px',
+                fontSize: isMobile ? '15px' : '18px',
                 letterSpacing: '1px',
                 color: '#F5F5F0',
                 margin: 0,
@@ -121,12 +131,16 @@ function Home() {
       </div>
 
       {/* PRODUCTOS DESTACADOS */}
-      <div style={{ padding: '0 24px 64px', maxWidth: '1100px', margin: '0 auto' }}>
+      <div style={{
+        padding: isMobile ? '0 16px 40px' : '0 24px 64px',
+        maxWidth: '1100px',
+        margin: '0 auto',
+      }}>
         <p style={{
           fontFamily: "'Anton', sans-serif",
-          fontSize: '18px',
+          fontSize: isMobile ? '16px' : '18px',
           letterSpacing: '1px',
-          marginBottom: '20px',
+          marginBottom: isMobile ? '14px' : '20px',
         }}>
           DESTACADOS
         </p>
@@ -139,8 +153,8 @@ function Home() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-          gap: '16px',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: isMobile ? '10px' : '16px',
         }}>
           {featuredProducts.map((product) => (
             <Link
@@ -154,17 +168,28 @@ function Home() {
                 overflow: 'hidden',
               }}>
                 <div style={{
-                  height: '220px',
+                  height: isMobile ? '140px' : '220px',
                   backgroundColor: '#262626',
                   backgroundImage: product.image_url ? `url(${product.image_url})` : 'none',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }} />
-                <div style={{ padding: '12px' }}>
-                  <p style={{ color: '#F5F5F0', fontSize: '14px', marginBottom: '4px' }}>
+                <div style={{ padding: isMobile ? '8px 10px' : '12px' }}>
+                  <p style={{
+                    color: '#F5F5F0',
+                    fontSize: isMobile ? '12px' : '14px',
+                    marginBottom: '4px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
                     {product.name}
                   </p>
-                  <p style={{ color: '#FFD500', fontSize: '15px', fontWeight: 500 }}>
+                  <p style={{
+                    color: '#FFD500',
+                    fontSize: isMobile ? '13px' : '15px',
+                    fontWeight: 500,
+                  }}>
                     {product.price} €
                   </p>
                 </div>
@@ -177,8 +202,10 @@ function Home() {
       {/* FOOTER */}
       <div style={{
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: isMobile ? '6px' : 0,
         justifyContent: 'space-between',
-        padding: '20px 24px',
+        padding: isMobile ? '16px' : '20px 24px',
         borderTop: '1px solid #262626',
         fontSize: '12px',
         color: '#666',
