@@ -87,7 +87,7 @@ function CategoryPage() {
           style={{
             display: "grid",
             gridTemplateColumns: isMobile
-              ? "1fr 1fr"
+              ? "repeat(2, minmax(0, 1fr))"
               : "repeat(auto-fill, minmax(220px, 1fr))",
             gap: isMobile ? "8px" : "16px",
           }}
@@ -96,13 +96,14 @@ function CategoryPage() {
             <Link
               key={product.id}
               to={`/producto/${product.id}`}
-              style={{ textDecoration: "none" }}
+              style={{ textDecoration: "none", minWidth: 0 }}
             >
               <div
                 style={{
                   backgroundColor: "#1C1C1C",
                   borderRadius: "6px",
                   overflow: "hidden",
+                  minWidth: 0,
                 }}
               >
                 <div
