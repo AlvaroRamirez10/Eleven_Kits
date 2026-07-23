@@ -8,6 +8,7 @@ function CategoryPage() {
   const { categorySlug, subcategorySlug } = useParams();
   const [products, setProducts] = useState([]);
   const [categoryName, setCategoryName] = useState("");
+  const [subcategoryName, setSubcategoryName] = useState("");
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
 
@@ -27,6 +28,7 @@ function CategoryPage() {
       }
 
       setCategoryName(category.name);
+      setSubcategoryName("");
 
       let query = supabase
         .from("products")
@@ -37,11 +39,12 @@ function CategoryPage() {
       if (subcategorySlug) {
         const { data: subcategory } = await supabase
           .from("subcategories")
-          .select("id")
+          .select("id, name")
           .eq("slug", subcategorySlug)
           .single();
 
         if (subcategory) {
+          setSubcategoryName(subcategory.name);
           query = query.eq("subcategory_id", subcategory.id);
         }
       }
@@ -72,7 +75,7 @@ function CategoryPage() {
             marginBottom: isMobile ? "14px" : "24px",
           }}
         >
-          {categoryName}
+          {subcategoryName ? `${categoryName} - ${subcategoryName}` : categoryName}
         </h1>
 
         {loading && <p style={{ color: "#8A8A8A" }}>Cargando productos...</p>}

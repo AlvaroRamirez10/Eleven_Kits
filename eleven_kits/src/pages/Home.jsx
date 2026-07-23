@@ -124,8 +124,7 @@ function Home() {
             margin: "16px auto 0",
           }}
         >
-          Camisetas, chándals y calzado deportivo. Envío rápido, calidad
-          revisada.
+          Camisetas, chándals y calzado deportivo. Encargos cada 15 dias, sin devoluciones. Envío gratis desde 60 €. 
         </p>
 
         <Link to="/categoria/futbol">

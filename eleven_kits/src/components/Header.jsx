@@ -44,8 +44,9 @@ function Header() {
       style={{
         backgroundColor: "#0A0A0A",
         borderBottom: "1px solid #262626",
-        position: "relative",
-        zIndex: 10,
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
       }}
     >
       <div
