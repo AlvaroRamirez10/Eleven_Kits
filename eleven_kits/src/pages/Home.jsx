@@ -1,30 +1,74 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import supabase from "../supabaseClient";
 import { useIsMobile } from "../useIsMobile";
-import { MessageCircle, Camera } from "lucide-react";
+import { MessageCircle, Camera, ArrowUpRight } from "lucide-react";
 
 function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
+  const scrollRef = useRef(null);
+  const CARD_WIDTH = 160; // 150px de ancho + 10px de gap
 
   useEffect(() => {
     async function fetchFeatured() {
       const { data } = await supabase
         .from("products")
         .select("id, name, price, image_url")
-        .eq("active", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
+        .eq("active", true);
 
-      setFeaturedProducts(data || []);
+      const allProducts = data || [];
+
+      // Semilla basada en la fecha de hoy (YYYY-MM-DD), así el resultado
+      // es el mismo para todos durante el día, pero cambia mañana.
+      const today = new Date().toISOString().slice(0, 10);
+      let seed = 0;
+      for (let i = 0; i < today.length; i++) {
+        seed = (seed * 31 + today.charCodeAt(i)) % 2147483647;
+      }
+
+      function seededRandom() {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+      }
+
+      // Barajado tipo Fisher-Yates, pero determinista según la semilla del día
+      const shuffled = [...allProducts];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      setFeaturedProducts(shuffled.slice(0, 8));
       setLoading(false);
     }
 
     fetchFeatured();
   }, []);
+
+  useEffect(() => {
+    if (!isMobile || featuredProducts.length === 0) return;
+
+    const container = scrollRef.current;
+    if (!container) return;
+
+    container.scrollLeft = featuredProducts.length * CARD_WIDTH;
+
+    function handleScroll() {
+      const setWidth = featuredProducts.length * CARD_WIDTH;
+
+      if (container.scrollLeft >= setWidth * 2) {
+        container.scrollLeft -= setWidth;
+      } else if (container.scrollLeft <= 0) {
+        container.scrollLeft += setWidth;
+      }
+    }
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [isMobile, featuredProducts]);
 
   return (
     <div
@@ -36,7 +80,6 @@ function Home() {
     >
       <Header />
 
-      {/* HERO */}
       <div
         style={{
           textAlign: "center",
@@ -106,7 +149,6 @@ function Home() {
         </Link>
       </div>
 
-      {/* CATEGORÍAS DESTACADAS */}
       <div
         style={{
           display: "grid",
@@ -158,7 +200,6 @@ function Home() {
         ))}
       </div>
 
-      {/* PRODUCTOS DESTACADOS */}
       <div
         style={{
           padding: isMobile ? "0 16px 40px" : "0 24px 64px",
@@ -186,11 +227,10 @@ function Home() {
         )}
 
         <div
+          ref={scrollRef}
           style={{
-            display: isMobile ? "flex" : "grid",
-            gridTemplateColumns: isMobile
-              ? undefined
-              : "repeat(auto-fill, minmax(220px, 1fr))",
+            display: "flex",
+            flexWrap: isMobile ? "nowrap" : "wrap",
             gap: isMobile ? "10px" : "16px",
             overflowX: isMobile ? "auto" : "visible",
             scrollSnapType: isMobile ? "x mandatory" : "none",
@@ -198,14 +238,17 @@ function Home() {
             WebkitOverflowScrolling: "touch",
           }}
         >
-          {featuredProducts.map((product) => (
+          {(isMobile
+            ? [...featuredProducts, ...featuredProducts, ...featuredProducts]
+            : featuredProducts
+          ).map((product, index) => (
             <Link
-              key={product.id}
+              key={`${product.id}-${index}`}
               to={`/producto/${product.id}`}
               style={{
                 textDecoration: "none",
-                flexShrink: isMobile ? 0 : undefined,
-                width: isMobile ? "150px" : undefined,
+                flexShrink: 0,
+                width: isMobile ? "150px" : "calc(25% - 12px)",
                 scrollSnapAlign: isMobile ? "start" : undefined,
               }}
             >
@@ -256,130 +299,195 @@ function Home() {
         </div>
       </div>
 
-      {/* CONTACTO */}
       <div
         style={{
-          padding: isMobile ? "0 16px 40px" : "0 24px 64px",
+          padding: isMobile ? "0 16px 48px" : "0 24px 80px",
           maxWidth: "1100px",
           margin: "0 auto",
         }}
       >
-        <p
-          style={{
-            fontFamily: "'Anton', sans-serif",
-            fontSize: isMobile ? "16px" : "18px",
-            letterSpacing: "1px",
-            marginBottom: isMobile ? "14px" : "20px",
-          }}
-        >
-          ¿HABLAMOS?
-        </p>
-
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: isMobile ? "10px" : "16px",
+            backgroundColor: "#141414",
+            border: "1px solid #262626",
+            borderRadius: "12px",
+            padding: isMobile ? "28px 20px" : "48px 56px",
+            position: "relative",
+            overflow: "hidden",
           }}
         >
-          <a
-            href="https://wa.me/34693242855"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <div
-              style={{
-                backgroundColor: "#1C1C1C",
-                border: "1px solid #262626",
-                borderRadius: "8px",
-                padding: isMobile ? "20px" : "28px",
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
-              }}
-            >
-              <div
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: "rgba(37, 211, 102, 0.12)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <MessageCircle color="#25D366" size={22} />
-              </div>
-              <div>
-                <p
-                  style={{
-                    color: "#F5F5F0",
-                    fontSize: "15px",
-                    marginBottom: "2px",
-                  }}
-                >
-                  WhatsApp
-                </p>
-                <p style={{ color: "#8A8A8A", fontSize: "13px" }}>
-                  Escríbenos, respondemos rápido
-                </p>
-              </div>
-            </div>
-          </a>
+          <div
+            style={{
+              position: "absolute",
+              top: "-60px",
+              right: "-60px",
+              width: "180px",
+              height: "180px",
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle, rgba(255,213,0,0.10) 0%, rgba(255,213,0,0) 70%)",
+            }}
+          />
 
-          <a
-            href="https://instagram.com/alvaror.10"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
+          <div
+            style={{
+              position: "relative",
+              textAlign: isMobile ? "left" : "center",
+            }}
           >
-            <div
+            <p
               style={{
-                backgroundColor: "#1C1C1C",
-                border: "1px solid #262626",
-                borderRadius: "8px",
-                padding: isMobile ? "20px" : "28px",
-                display: "flex",
-                alignItems: "center",
-                gap: "16px",
+                fontSize: "11px",
+                letterSpacing: "3px",
+                color: "#FFD500",
+                marginBottom: "10px",
               }}
             >
-              <div
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: "rgba(255, 213, 0, 0.12)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
+              ATENCIÓN AL CLIENTE
+            </p>
+
+            <p
+              style={{
+                fontFamily: "'Anton', sans-serif",
+                fontSize: isMobile ? "22px" : "32px",
+                letterSpacing: "1px",
+                marginBottom: "10px",
+                maxWidth: isMobile ? "none" : "560px",
+                marginLeft: isMobile ? 0 : "auto",
+                marginRight: isMobile ? 0 : "auto",
+              }}
+            >
+              ¿DUDAS CON UN PEDIDO O UNA TALLA?
+            </p>
+
+            <p
+              style={{
+                color: "#8A8A8A",
+                fontSize: "14px",
+                marginBottom: isMobile ? "24px" : "32px",
+                maxWidth: isMobile ? "none" : "460px",
+                marginLeft: isMobile ? 0 : "auto",
+                marginRight: isMobile ? 0 : "auto",
+              }}
+            >
+              Escríbenos directamente, respondemos rápido y sin rodeos.
+            </p>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+                gap: "12px",
+                maxWidth: isMobile ? "none" : "480px",
+                margin: isMobile ? 0 : "0 auto",
+              }}
+            >
+              <a
+                href="https://wa.me/34693242855"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none" }}
               >
-                <Camera color="#FFD500" size={22} />
-              </div>
-              <div>
-                <p
+                <div
                   style={{
-                    color: "#F5F5F0",
-                    fontSize: "15px",
-                    marginBottom: "2px",
+                    backgroundColor: "#1C1C1C",
+                    border: "1px solid #2A2A2A",
+                    borderRadius: "10px",
+                    padding: "16px 18px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                    textAlign: "left",
                   }}
                 >
-                  Instagram
-                </p>
-                <p style={{ color: "#8A8A8A", fontSize: "13px" }}>
-                  @alvaror.10
-                </p>
-              </div>
+                  <div
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "10px",
+                      backgroundColor: "rgba(37, 211, 102, 0.12)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <MessageCircle color="#25D366" size={20} />
+                  </div>
+                  <div style={{ flexGrow: 1, minWidth: 0 }}>
+                    <p
+                      style={{
+                        color: "#F5F5F0",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        marginBottom: "1px",
+                      }}
+                    >
+                      WhatsApp
+                    </p>
+                    <p style={{ color: "#8A8A8A", fontSize: "12px" }}>
+                      Respuesta rápida
+                    </p>
+                  </div>
+                  <ArrowUpRight color="#4A4A4A" size={16} />
+                </div>
+              </a>
+
+              <a
+                href="https://instagram.com/alvaror.10"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none" }}
+              >
+                <div
+                  style={{
+                    backgroundColor: "#1C1C1C",
+                    border: "1px solid #2A2A2A",
+                    borderRadius: "10px",
+                    padding: "16px 18px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                    textAlign: "left",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      borderRadius: "10px",
+                      backgroundColor: "rgba(255, 213, 0, 0.12)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Camera color="#FFD500" size={20} />
+                  </div>
+                  <div style={{ flexGrow: 1, minWidth: 0 }}>
+                    <p
+                      style={{
+                        color: "#F5F5F0",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        marginBottom: "1px",
+                      }}
+                    >
+                      Instagram
+                    </p>
+                    <p style={{ color: "#8A8A8A", fontSize: "12px" }}>
+                      @alvaror.10
+                    </p>
+                  </div>
+                  <ArrowUpRight color="#4A4A4A" size={16} />
+                </div>
+              </a>
             </div>
-          </a>
+          </div>
         </div>
       </div>
-      {/* FOOTER */}
+
       <div
         style={{
           display: "flex",
