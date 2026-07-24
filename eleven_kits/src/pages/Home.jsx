@@ -124,8 +124,7 @@ function Home() {
             margin: "16px auto 0",
           }}
         >
-          Camisetas, chándals y calzado deportivo. Encargos cada 15 dias, sin
-          devoluciones. Envío gratis desde 60 €.
+          Camisetas, chándals y calzado deportivo. Encargos cada dia 25 de cada mes, Envío gratis desde 60 €, Venta al por mayor con descuentos.
         </p>
 
         <Link to="/categoria/futbol">
@@ -370,7 +369,7 @@ function Home() {
                 marginRight: isMobile ? 0 : "auto",
               }}
             >
-              Escríbenos directamente, respondemos rápido y sin rodeos.
+              Si tienes dudas sobre un pedido o una talla, escríbenos y te contestamos lo antes posible. También puedes consultar nuestra sección de información para ver detalles sobre devoluciones y cuidado de la ropa.
             </p>
 
             <div
