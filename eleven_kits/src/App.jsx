@@ -10,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminProducts from './pages/AdminProducts';
 import AdminOrders from './pages/AdminOrders';
 import AdminCategories from './pages/AdminCategories';
+import InfoPage from './pages/InfoPage';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/admin/productos" element={<AdminProducts />} />
         <Route path="/admin/pedidos" element={<AdminOrders />} />
         <Route path="/admin/categorias" element={<AdminCategories />} />
+        <Route path="/informacion" element={<InfoPage />} />
       </Routes>
     </BrowserRouter>
   );

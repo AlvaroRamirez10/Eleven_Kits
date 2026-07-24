@@ -124,7 +124,8 @@ function Home() {
             margin: "16px auto 0",
           }}
         >
-          Camisetas, chándals y calzado deportivo. Encargos cada 15 dias, sin devoluciones. Envío gratis desde 60 €. 
+          Camisetas, chándals y calzado deportivo. Encargos cada 15 dias, sin
+          devoluciones. Envío gratis desde 60 €.
         </p>
 
         <Link to="/categoria/futbol">
@@ -489,17 +490,35 @@ function Home() {
 
       <div
         style={{
+          margin: isMobile ? "0 16px 20px" : "0 24px 24px",
+          padding: isMobile ? "14px 16px" : "16px 20px",
+          border: "1px solid #2A2A2A",
+          borderRadius: "12px",
+          backgroundColor: "#121212",
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
-          gap: isMobile ? "6px" : 0,
+          gap: isMobile ? "10px" : 0,
           justifyContent: "space-between",
-          padding: isMobile ? "16px" : "20px 24px",
-          borderTop: "1px solid #262626",
+          alignItems: isMobile ? "flex-start" : "center",
           fontSize: "12px",
-          color: "#666",
+          color: "#B8B8B0",
         }}
       >
-        <span>© Eleven Kits</span>
+        <span style={{ color: "#F5F5F0" }}>© Eleven Kits</span>
+        <Link
+          to="/informacion"
+          style={{
+            color: "#FFD500",
+            textDecoration: "none",
+            fontWeight: 600,
+            padding: "6px 10px",
+            borderRadius: "999px",
+            backgroundColor: "rgba(255, 213, 0, 0.12)",
+            border: "1px solid rgba(255, 213, 0, 0.24)",
+          }}
+        >
+          Tallas · Devoluciones · Cuidado de la ropa
+        </Link>
         <span>Envío gratis desde 60 €</span>
       </div>
     </div>
