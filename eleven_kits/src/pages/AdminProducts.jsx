@@ -28,6 +28,7 @@ function AdminProducts() {
     customizationPrice: "",
     patchesAvailable: false,
     patchesPrice: "",
+    otherColorsAvailable: false,
   });
   const [imageFile, setImageFile] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
@@ -62,7 +63,7 @@ function AdminProducts() {
     const { data: prods } = await supabase
       .from("products")
       .select(
-        "id, name, description, price, image_url, active, category_id, subcategory_id, customizable, customization_price, patches_available, patches_price",
+        "id, name, description, price, image_url, active, category_id, subcategory_id, customizable, customization_price, patches_available, patches_price, other_colors_available",
       )
       .order("created_at", { ascending: false });
     const { data: variants } = await supabase
@@ -150,6 +151,7 @@ function AdminProducts() {
       customizationPrice: product.customization_price || "",
       patchesAvailable: product.patches_available || false,
       patchesPrice: product.patches_price || "",
+      otherColorsAvailable: product.other_colors_available || false,
     });
     setImageFile(null);
     setGalleryFiles([]);
@@ -170,6 +172,7 @@ function AdminProducts() {
       customizationPrice: "",
       patchesAvailable: false,
       patchesPrice: "",
+      otherColorsAvailable: false,
     });
     setImageFile(null);
     setGalleryFiles([]);
@@ -245,6 +248,7 @@ function AdminProducts() {
         patches_price: form.patchesAvailable
           ? parseFloat(form.patchesPrice) || 0
           : 0,
+        other_colors_available: form.otherColorsAvailable,
       };
 
       if (imageUrl) {
@@ -297,6 +301,7 @@ function AdminProducts() {
         patches_price: form.patchesAvailable
           ? parseFloat(form.patchesPrice) || 0
           : 0,
+        other_colors_available: form.otherColorsAvailable,
       })
       .select()
       .single();
@@ -771,8 +776,17 @@ function AdminProducts() {
             onChange={(e) => setGalleryFiles(Array.from(e.target.files))}
             style={{ display: "none" }}
           />
-          <p style={{ fontSize: "11px", color: "#666", marginTop: "-4px", marginBottom: "16px" }}>
-            Consejo: mantén pulsado Ctrl (o Shift para un rango) al hacer clic en las fotos dentro del explorador de Windows para seleccionar varias a la vez.
+          <p
+            style={{
+              fontSize: "11px",
+              color: "#666",
+              marginTop: "-4px",
+              marginBottom: "16px",
+            }}
+          >
+            Consejo: mantén pulsado Ctrl (o Shift para un rango) al hacer clic
+            en las fotos dentro del explorador de Windows para seleccionar
+            varias a la vez.
           </p>
 
           {existingGallery.length > 0 && (
@@ -911,35 +925,68 @@ function AdminProducts() {
             </>
           )}
 
-          <div style={{ borderTop: "1px solid #262626", paddingTop: "16px", marginBottom: "4px" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", marginBottom: "10px", cursor: "pointer" }}>
+          <div
+            style={{
+              borderTop: "1px solid #262626",
+              paddingTop: "16px",
+              marginBottom: "4px",
+            }}
+          >
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "13px",
+                marginBottom: "10px",
+                cursor: "pointer",
+              }}
+            >
               <input
                 type="checkbox"
                 checked={form.customizable}
-                onChange={(e) => setForm({ ...form, customizable: e.target.checked })}
+                onChange={(e) =>
+                  setForm({ ...form, customizable: e.target.checked })
+                }
               />
               Permitir personalizar nombre y número
             </label>
 
             {form.customizable && (
               <div style={{ marginBottom: "14px", marginLeft: "24px" }}>
-                <label style={labelStyle}>Precio extra por personalización (€)</label>
+                <label style={labelStyle}>
+                  Precio extra por personalización (€)
+                </label>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={form.customizationPrice}
-                  onChange={(e) => setForm({ ...form, customizationPrice: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, customizationPrice: e.target.value })
+                  }
                   style={{ ...inputStyle, marginBottom: 0 }}
                 />
               </div>
             )}
 
-            <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", marginTop: "14px", marginBottom: "10px", cursor: "pointer" }}>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "13px",
+                marginTop: "14px",
+                marginBottom: "10px",
+                cursor: "pointer",
+              }}
+            >
               <input
                 type="checkbox"
                 checked={form.patchesAvailable}
-                onChange={(e) => setForm({ ...form, patchesAvailable: e.target.checked })}
+                onChange={(e) =>
+                  setForm({ ...form, patchesAvailable: e.target.checked })
+                }
               />
               Permitir añadir parches en las mangas
             </label>
@@ -952,11 +999,33 @@ function AdminProducts() {
                   step="0.01"
                   min="0"
                   value={form.patchesPrice}
-                  onChange={(e) => setForm({ ...form, patchesPrice: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, patchesPrice: e.target.value })
+                  }
                   style={{ ...inputStyle, marginBottom: 0 }}
                 />
               </div>
             )}
+
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                fontSize: "13px",
+                marginTop: "14px",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={form.otherColorsAvailable}
+                onChange={(e) =>
+                  setForm({ ...form, otherColorsAvailable: e.target.checked })
+                }
+              />
+              Hay más colores disponibles bajo pedido
+            </label>
           </div>
 
           {message && (

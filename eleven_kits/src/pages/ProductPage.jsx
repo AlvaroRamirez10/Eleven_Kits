@@ -4,6 +4,7 @@ import { useCart } from "../CartContext";
 import Header from "../components/Header";
 import supabase from "../supabaseClient";
 import { useIsMobile } from "../useIsMobile";
+import { X } from "lucide-react";
 
 function ProductPage() {
   const { id } = useParams();
@@ -21,6 +22,7 @@ function ProductPage() {
   const [wantsCustomization, setWantsCustomization] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customNumber, setCustomNumber] = useState("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [wantsPatches, setWantsPatches] = useState(false);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ function ProductPage() {
       const { data: productData } = await supabase
         .from("products")
         .select(
-          "id, name, description, price, image_url, customizable, customization_price, patches_available, patches_price",
+          "id, name, description, price, image_url, customizable, customization_price, patches_available, patches_price, other_colors_available",
         )
         .eq("id", id)
         .single();
@@ -123,6 +125,7 @@ function ProductPage() {
       >
         <div>
           <div
+            onClick={() => images[activeImageIndex] && setLightboxOpen(true)}
             style={{
               backgroundColor: "#1C1C1C",
               borderRadius: "8px",
@@ -132,6 +135,7 @@ function ProductPage() {
               justifyContent: "center",
               overflow: "hidden",
               marginBottom: "12px",
+              cursor: images[activeImageIndex] ? "zoom-in" : "default",
             }}
           >
             {images[activeImageIndex] && (
@@ -278,6 +282,41 @@ function ProductPage() {
                   Selecciona una talla antes de añadir al carrito.
                 </p>
               )}
+            </div>
+          )}
+
+          {product.other_colors_available && (
+            <div
+              style={{
+                backgroundColor: "#1C1C1C",
+                border: "1px solid #262626",
+                borderRadius: "6px",
+                padding: "12px 16px",
+                marginBottom: "24px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "12px",
+              }}
+            >
+              <p style={{ fontSize: "13px", color: "#B8B8B0" }}>
+                ¿Buscas otro color? Consúltanos y te ayudaremos a encontrarlo.
+              </p>
+
+              <a
+                href="https://wa.me/34693242855"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: "#FFD500",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                WhatsApp →
+              </a>
             </div>
           )}
 
@@ -466,6 +505,58 @@ function ProductPage() {
           }}
         >
           Producto añadido al carrito ✓
+        </div>
+      )}
+
+      {lightboxOpen && images[activeImageIndex] && (
+        <div
+          onClick={() => setLightboxOpen(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.92)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100,
+            padding: "24px",
+            cursor: "zoom-out",
+          }}
+        >
+          <button
+            onClick={() => setLightboxOpen(false)}
+            style={{
+              position: "absolute",
+              top: isMobile ? "16px" : "24px",
+              right: isMobile ? "16px" : "24px",
+              background: "rgba(255,255,255,0.1)",
+              border: "none",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            <X color="#F5F5F0" size={20} />
+          </button>
+
+          <img
+            src={images[activeImageIndex].image_url}
+            alt={product.name}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: "contain",
+              cursor: "default",
+            }}
+          />
         </div>
       )}
     </div>

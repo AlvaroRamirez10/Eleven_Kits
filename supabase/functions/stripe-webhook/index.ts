@@ -61,7 +61,7 @@ serve(async (req) => {
     const productIds = items.map((i: any) => i.productId);
     const { data: products } = await supabase
       .from("products")
-      .select("id, price")
+      .select("id, price, name")
       .in("id", productIds);
 
     const orderItems = items.map((item: any) => {
@@ -82,7 +82,6 @@ serve(async (req) => {
 
     await supabase.from("order_items").insert(orderItems);
 
-    // Descontar stock de las tallas vendidas
     // Descontar stock de las tallas vendidas
     for (const item of items) {
       if (item.variantId) {
@@ -145,6 +144,52 @@ serve(async (req) => {
     } catch (emailError) {
       console.error("Error enviando email:", emailError);
       // No bloqueamos el pedido si falla el email, solo lo registramos
+    }
+
+    // Notificación de nueva venta por Telegram
+    try {
+      const itemsList = items
+        .map((item: any) => {
+          const product = products?.find((p) => p.id === item.productId);
+          const productName = product?.name || "Producto";
+          let line = `• ${item.quantity}x ${productName}`;
+          if (item.customizationName || item.customizationNumber) {
+            line += ` (${item.customizationName || ""} ${item.customizationNumber ? "#" + item.customizationNumber : ""})`;
+          }
+          if (item.hasPatches) {
+            line += " + parches";
+          }
+          return line;
+        })
+        .join("\n");
+
+      const message = `🛒 *¡Nuevo pedido en Eleven Kits!*
+
+👤 ${metadata.customer_name}
+📧 ${session.customer_email}
+📞 ${metadata.customer_phone || "sin teléfono"}
+
+${itemsList}
+
+💰 Total: ${(session.amount_total / 100).toFixed(2)} €
+
+📍 ${metadata.shipping_address}, ${metadata.shipping_city}, ${metadata.shipping_postal_code}`;
+
+      await fetch(
+        `https://api.telegram.org/bot${Deno.env.get("TELEGRAM_BOT_TOKEN")}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: Deno.env.get("TELEGRAM_CHAT_ID"),
+            text: message,
+            parse_mode: "Markdown",
+          }),
+        },
+      );
+    } catch (telegramError) {
+      console.error("Error enviando notificación de Telegram:", telegramError);
+      // No bloqueamos el pedido si falla la notificación, solo lo registramos
     }
   }
 
