@@ -68,23 +68,55 @@ function CategoryPage() {
       <Header />
 
       <div style={{ padding: isMobile ? "16px 12px" : "32px 24px" }}>
-        <h1
+        <div
           style={{
-            fontFamily: "'Anton', sans-serif",
-            fontSize: isMobile ? "20px" : "28px",
-            marginBottom: isMobile ? "14px" : "24px",
+            maxWidth: "760px",
+            margin: "0 auto",
+            textAlign: "center",
           }}
         >
-          {subcategoryName ? `${categoryName} - ${subcategoryName}` : categoryName}
-        </h1>
+          <h1
+            style={{
+              fontFamily: "'Anton', sans-serif",
+              fontSize: isMobile ? "20px" : "28px",
+              marginBottom: isMobile ? "14px" : "24px",
+            }}
+          >
+            {subcategoryName ? `${categoryName} - ${subcategoryName}` : categoryName}
+          </h1>
 
-        {loading && <p style={{ color: "#8A8A8A" }}>Cargando productos...</p>}
+          {categorySlug === "calzado" && (
+            <div
+              style={{
+                marginBottom: isMobile ? "18px" : "28px",
+                padding: isMobile ? "14px 12px" : "16px 18px",
+                borderRadius: "10px",
+                border: "1px solid rgba(255, 213, 0, 0.28)",
+                backgroundColor: "rgba(255, 213, 0, 0.08)",
+                color: "#F5F5F0",
+                textAlign: "center",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: isMobile ? "13px" : "14px",
+                  lineHeight: 1.5,
+                  margin: 0,
+                }}
+              >
+                En calzado hay muchos modelos y colores. Si no ves el que buscas en la web, pregúntanos por el modelo y el color concreto.
+              </p>
+            </div>
+          )}
 
-        {!loading && products.length === 0 && (
-          <p style={{ color: "#8A8A8A" }}>
-            Todavía no hay productos en esta categoría.
-          </p>
-        )}
+          {loading && <p style={{ color: "#8A8A8A" }}>Cargando productos...</p>}
+
+          {!loading && products.length === 0 && (
+            <p style={{ color: "#8A8A8A" }}>
+              Todavía no hay productos en esta categoría.
+            </p>
+          )}
+        </div>
 
         <div
           style={{

@@ -114,7 +114,7 @@ function AdminProducts() {
       if (size in updated) {
         delete updated[size];
       } else {
-        updated[size] = "";
+        updated[size] = "100";
       }
       return updated;
     });
