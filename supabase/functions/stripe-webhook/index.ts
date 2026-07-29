@@ -61,7 +61,7 @@ serve(async (req) => {
     const productIds = items.map((i: any) => i.productId);
     const { data: products } = await supabase
       .from("products")
-      .select("id, price, name")
+      .select("id, price, name, image_url")
       .in("id", productIds);
 
     const orderItems = items.map((item: any) => {
@@ -187,6 +187,34 @@ ${itemsList}
           }),
         },
       );
+
+      // Enviar una foto por cada producto comprado, con su cantidad y personalización
+      for (const item of items) {
+        const product = products?.find((p) => p.id === item.productId);
+
+        if (product?.image_url) {
+          let caption = `${item.quantity}x ${product.name}`;
+          if (item.customizationName || item.customizationNumber) {
+            caption += ` (${item.customizationName || ""} ${item.customizationNumber ? "#" + item.customizationNumber : ""})`;
+          }
+          if (item.hasPatches) {
+            caption += " + parches";
+          }
+
+          await fetch(
+            `https://api.telegram.org/bot${Deno.env.get("TELEGRAM_BOT_TOKEN")}/sendPhoto`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                chat_id: Deno.env.get("TELEGRAM_CHAT_ID"),
+                photo: product.image_url,
+                caption: caption,
+              }),
+            },
+          );
+        }
+      }
     } catch (telegramError) {
       console.error("Error enviando notificación de Telegram:", telegramError);
       // No bloqueamos el pedido si falla la notificación, solo lo registramos
