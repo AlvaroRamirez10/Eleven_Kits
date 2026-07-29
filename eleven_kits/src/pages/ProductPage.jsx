@@ -300,7 +300,7 @@ function ProductPage() {
               }}
             >
               <p style={{ fontSize: "13px", color: "#B8B8B0" }}>
-                ¿Buscas otro color? Consúltanos y te ayudaremos a encontrarlo.
+                ¿Buscas otro color de este modelo? Consúltanos y te ayudaremos a encontrarlo.
               </p>
 
               <a
