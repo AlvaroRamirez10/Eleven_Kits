@@ -7,10 +7,17 @@ import { useIsMobile } from "../useIsMobile";
 function CategoryPage() {
   const { categorySlug, subcategorySlug } = useParams();
   const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [subcategoryName, setSubcategoryName] = useState("");
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredProducts = normalizedSearch
+    ? products.filter((product) =>
+        product.name?.toLowerCase().includes(normalizedSearch)
+      )
+    : products;
 
   useEffect(() => {
     async function fetchProducts() {
@@ -29,6 +36,7 @@ function CategoryPage() {
 
       setCategoryName(category.name);
       setSubcategoryName("");
+      setSearchTerm("");
 
       let query = supabase
         .from("products")
@@ -109,11 +117,43 @@ function CategoryPage() {
             </div>
           )}
 
+          {!loading && products.length > 0 && (
+            <div
+              style={{
+                marginBottom: isMobile ? "14px" : "18px",
+              }}
+            >
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Buscar producto..."
+                style={{
+                  width: "100%",
+                  maxWidth: "420px",
+                  backgroundColor: "#141414",
+                  border: "1px solid #333",
+                  borderRadius: "6px",
+                  color: "#F5F5F0",
+                  fontSize: isMobile ? "13px" : "14px",
+                  padding: isMobile ? "10px 12px" : "11px 14px",
+                  outline: "none",
+                }}
+              />
+            </div>
+          )}
+
           {loading && <p style={{ color: "#8A8A8A" }}>Cargando productos...</p>}
 
           {!loading && products.length === 0 && (
             <p style={{ color: "#8A8A8A" }}>
               Todavía no hay productos en esta categoría.
+            </p>
+          )}
+
+          {!loading && products.length > 0 && filteredProducts.length === 0 && (
+            <p style={{ color: "#8A8A8A" }}>
+              No hay productos que coincidan con tu búsqueda.
             </p>
           )}
         </div>
@@ -127,7 +167,7 @@ function CategoryPage() {
             gap: isMobile ? "8px" : "16px",
           }}
         >
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <Link
               key={product.id}
               to={`/producto/${product.id}`}

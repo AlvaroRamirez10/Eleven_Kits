@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import supabase from "../supabaseClient";
 import { useIsMobile } from "../useIsMobile";
-import { MessageCircle, Camera, ArrowUpRight } from "lucide-react";
+import { Send, ArrowUpRight } from "lucide-react";
 
 function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -374,15 +374,12 @@ function Home() {
 
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-                gap: "12px",
-                maxWidth: isMobile ? "none" : "480px",
+                maxWidth: isMobile ? "none" : "320px",
                 margin: isMobile ? 0 : "0 auto",
               }}
             >
               <a
-                href="https://wa.me/34693242855"
+                href="https://t.me/ElevenKits10"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "none" }}
@@ -404,14 +401,14 @@ function Home() {
                       width: "42px",
                       height: "42px",
                       borderRadius: "10px",
-                      backgroundColor: "rgba(37, 211, 102, 0.12)",
+                      backgroundColor: "rgba(0, 136, 204, 0.12)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       flexShrink: 0,
                     }}
                   >
-                    <MessageCircle color="#25D366" size={20} />
+                    <Send color="#0088CC" size={20} />
                   </div>
                   <div style={{ flexGrow: 1, minWidth: 0 }}>
                     <p
@@ -422,61 +419,10 @@ function Home() {
                         marginBottom: "1px",
                       }}
                     >
-                      WhatsApp
+                      Telegram
                     </p>
                     <p style={{ color: "#8A8A8A", fontSize: "12px" }}>
                       Respuesta rápida
-                    </p>
-                  </div>
-                  <ArrowUpRight color="#4A4A4A" size={16} />
-                </div>
-              </a>
-
-              <a
-                href="https://instagram.com/alvaror.10"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none" }}
-              >
-                <div
-                  style={{
-                    backgroundColor: "#1C1C1C",
-                    border: "1px solid #2A2A2A",
-                    borderRadius: "10px",
-                    padding: "16px 18px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "14px",
-                    textAlign: "left",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "42px",
-                      height: "42px",
-                      borderRadius: "10px",
-                      backgroundColor: "rgba(255, 213, 0, 0.12)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Camera color="#FFD500" size={20} />
-                  </div>
-                  <div style={{ flexGrow: 1, minWidth: 0 }}>
-                    <p
-                      style={{
-                        color: "#F5F5F0",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        marginBottom: "1px",
-                      }}
-                    >
-                      Instagram
-                    </p>
-                    <p style={{ color: "#8A8A8A", fontSize: "12px" }}>
-                      @alvaror.10
                     </p>
                   </div>
                   <ArrowUpRight color="#4A4A4A" size={16} />

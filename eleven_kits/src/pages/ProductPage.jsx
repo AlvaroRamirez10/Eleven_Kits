@@ -304,7 +304,7 @@ function ProductPage() {
               </p>
 
               <a
-                href="https://wa.me/34693242855"
+                href="https://t.me/ElevenKits10"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -315,7 +315,7 @@ function ProductPage() {
                   whiteSpace: "nowrap",
                 }}
               >
-                WhatsApp →
+                Telegram →
               </a>
             </div>
           )}

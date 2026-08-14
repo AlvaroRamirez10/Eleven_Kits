@@ -78,7 +78,7 @@ function InfoPage() {
         <section style={sectionStyle}>
           <p style={titleStyle}>GUÍA DE TALLAS</p>
           <p style={subTitleStyle}>
-            Todas las medidas están en centímetros. Si tienes dudas sobre qué talla elegir, contáctanos por WhatsApp o Instagram antes de comprar.
+            Todas las medidas están en centímetros. Si tienes dudas sobre qué talla elegir, contáctanos por Telegram antes de comprar.
           </p>
 
           <p style={tableTitleStyle}>Camisetas — Hombre</p>
@@ -247,7 +247,7 @@ function InfoPage() {
             </ul>
             <p style={{ fontSize: '13px', color: '#8A8A8A', lineHeight: 1.6, marginTop: '10px' }}>
               Los gastos de envío de la devolución corren por cuenta del cliente. Para iniciar
-              una devolución, escríbenos por WhatsApp indicando tu número de pedido.
+              una devolución, escríbenos por Telegram indicando tu número de pedido.
             </p>
           </div>
         </section>
